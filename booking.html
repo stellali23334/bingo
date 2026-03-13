@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>预约拍摄 - 宠物拍摄预约</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="booking-page">
+    <div class="page">
+      <header class="site-header">
+        <div class="container nav-inner">
+          <a class="nav-left" href="index.html">BINGO STUDIO</a>
+          <nav>
+            <ul>
+              <li><a href="booking.html" class="active">booking</a></li>
+              <li><a href="faq.html">questions</a></li>
+              <li><a href="about.html">listener</a></li>
+            </ul>
+          </nav>
+        </div>
+      </header>
+
+      <main class="main">
+        <div class="container">
+          <section class="page-heading">
+            <h1 class="page-title">预约拍摄</h1>
+            <p class="page-description">
+              整个拍摄时长约 90
+              分钟。请根据您和宝贝的作息，选择一个舒适的日期与时间段。
+            </p>
+          </section>
+
+          <section class="form-section">
+            <form id="booking-form" class="form-card" novalidate>
+              <section aria-labelledby="date-time-heading" class="form-group">
+                <h2 id="date-time-heading" class="section-title">
+                  日期与时间
+                </h2>
+                <div class="spacing-sm"></div>
+
+                <div class="form-group-inline booking-date-row">
+                  <div class="form-group">
+                    <label class="form-label" for="date">
+                      预约日期<span class="required">*</span>
+                    </label>
+                    <input
+                      type="date"
+                      id="date"
+                      name="date"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div class="spacing-sm"></div>
+
+                <div class="form-group">
+                  <label class="form-label">
+                    预约时间段<span class="required">*</span>
+                  </label>
+                  <div id="time-slots" class="time-slots" role="radiogroup">
+                    <!-- 由脚本渲染固定时间段 -->
+                  </div>
+                  <div
+                    id="booking-unavailable-message"
+                    class="error-text"
+                    aria-live="polite"
+                  ></div>
+                  <input type="hidden" id="time" name="time" required />
+                </div>
+              </section>
+
+              <div class="spacing-md"></div>
+
+              <section aria-labelledby="basic-info-heading" class="form-group">
+                <h2 id="basic-info-heading" class="section-title">
+                  基础信息
+                </h2>
+                <div class="spacing-sm"></div>
+
+                <div class="form-group-inline">
+                  <div class="form-group">
+                    <label class="form-label" for="owner-name">
+                      用户名字<span class="required">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      id="owner-name"
+                      name="ownerName"
+                      required
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="baby-count">
+                      有几位宝贝<span class="required">*</span>
+                    </label>
+                    <select id="baby-count" name="babyCount" required>
+                      <option value="1">1 位宝贝</option>
+                      <option value="2">2 位宝贝</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="wechat-id">
+                      微信号<span class="required">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      id="wechat-id"
+                      name="wechatId"
+                      placeholder="请填写可联系到您的微信号"
+                      required
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="email">
+                      邮箱<span class="required">*</span>
+                    </label>
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      placeholder="example@email.com"
+                      required
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="phone">
+                      电话号码<span class="required">*</span>
+                    </label>
+                    <input
+                      type="tel"
+                      id="phone"
+                      name="phone"
+                      placeholder="请填写常用手机号"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div class="spacing-sm"></div>
+
+                <div class="form-group-inline booking-music-row">
+                  <div class="form-group">
+                    <label class="form-label" for="music-playlist">
+                      音乐偏好（可上传歌单链接）
+                    </label>
+                    <input
+                      type="text"
+                      id="music-playlist"
+                      name="musicPlaylist"
+                      placeholder="请粘贴歌单链接"
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="music-style">
+                      喜欢的音乐风格
+                    </label>
+                    <input
+                      type="text"
+                      id="music-style"
+                      name="musicStyle"
+                      placeholder="例如：轻爵士 / lo-fi / 独立民谣 / 古典"
+                    />
+                  </div>
+                </div>
+
+                <div class="spacing-sm"></div>
+
+                <div class="form-group-inline">
+                  <div class="form-group">
+                    <label class="form-label" for="allergy-status">
+                      是否存在过敏源
+                    </label>
+                    <select id="allergy-status" name="allergyStatus">
+                      <option value="">请选择</option>
+                      <option value="no">没有，可跳过</option>
+                      <option value="yes">有，需要填写</option>
+                    </select>
+                  </div>
+                  <div class="form-group booking-allergy-detail" id="allergy-detail-wrap" hidden>
+                    <label class="form-label" for="allergy-detail">
+                      请填写过敏源
+                    </label>
+                    <input
+                      type="text"
+                      id="allergy-detail"
+                      name="allergyDetail"
+                      placeholder="例如：鸡肉 / 牛肉 / 花粉 / 灰尘"
+                    />
+                  </div>
+                </div>
+              </section>
+
+              <div class="spacing-md"></div>
+
+              <section
+                aria-labelledby="pet-info-heading"
+                class="form-group"
+              >
+                <h2 id="pet-info-heading" class="section-title">
+                  宝贝信息
+                </h2>
+                <div class="spacing-sm"></div>
+
+                <div id="baby-profiles" class="baby-profiles"></div>
+              </section>
+
+              <div class="spacing-md"></div>
+
+              <section
+                aria-labelledby="emotion-question-heading"
+                class="form-group"
+              >
+                <h2 id="emotion-question-heading" class="section-title">
+                  好啦，感谢您的填写。最后一个问题是：
+                </h2>
+                <div class="spacing-sm"></div>
+
+                <label class="form-label" for="emotion-question">
+                  想象您的小宝可以回答您的一个问题，您会想要问她（他）什么问题呢？
+                </label>
+                <textarea
+                  id="emotion-question"
+                  name="emotionQuestion"
+                  rows="4"
+                  placeholder="可以写下一句话、一个问题，或此刻的心情。"
+                ></textarea>
+              </section>
+
+              <div class="spacing-md"></div>
+
+              <section
+                aria-labelledby="notice-heading"
+                class="form-group"
+              >
+                <h2 id="notice-heading" class="section-title">
+                  拍摄须知 Before You Come
+                </h2>
+                <div class="spacing-sm"></div>
+
+                <article class="notice-card">
+                  <ul class="notice-list">
+                    <li>请提前遛宝贝 / 让其适度消耗精力</li>
+                    <li>请携带喜欢的零食或玩具</li>
+                    <li>请带牵引绳</li>
+                    <li>若宝贝有攻击史，请提前如实说明</li>
+                    <li>主人需配合安抚与控制</li>
+                    <li>如宝贝当天状态异常，建议改期</li>
+                    <li>
+                      拍摄更重视宝贝自然状态，不保证每一张都高度可控摆拍
+                    </li>
+                    <li>如果需要取消，请提前 24 小时通知</li>
+                  </ul>
+                </article>
+              </section>
+
+              <div class="spacing-md"></div>
+
+              <section class="form-group">
+                <div class="consent-row">
+                  <input
+                    type="checkbox"
+                    id="consent"
+                    name="consent"
+                    required
+                  />
+                  <label class="consent-text" for="consent">
+                    我已阅读并同意拍摄须知。
+                  </label>
+                </div>
+                <div
+                  id="consent-error"
+                  class="error-text"
+                  aria-live="polite"
+                ></div>
+              </section>
+
+              <div class="form-actions">
+                <button
+                  type="submit"
+                  class="btn"
+                  id="submit-button"
+                >
+                  提交预约
+                </button>
+                <div class="helper-text">
+                  表单提交后，我们会通过您留下的联系方式与您确认具体细节。
+                </div>
+              </div>
+
+              <div
+                id="form-message"
+                class="helper-text"
+                aria-live="polite"
+              ></div>
+            </form>
+          </section>
+        </div>
+      </main>
+
+      <footer class="site-footer">
+        <div class="container booking-contact">
+          <div>tel：07579917172</div>
+          <div>小红书：迷你幽默薯饼</div>
+          <div>email：lizhiyanbing555@163.com</div>
+        </div>
+      </footer>
+    </div>
+
+    <script src="booking.js"></script>
+  </body>
+</html>
+

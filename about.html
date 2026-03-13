@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>Listener - 宠物拍摄预约</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="listener-page">
+    <div class="page">
+      <header class="site-header">
+        <div class="container nav-inner">
+          <a class="nav-left" href="index.html">BINGO STUDIO</a>
+          <nav>
+            <ul>
+              <li><a href="booking.html">booking</a></li>
+              <li><a href="faq.html">questions</a></li>
+              <li><a href="about.html" class="active">listener</a></li>
+            </ul>
+          </nav>
+        </div>
+      </header>
+
+      <main class="main">
+        <div class="container">
+          <section class="page-heading listener-heading">
+            <h1 class="page-title">我们关心您的想法</h1>
+          </section>
+
+          <section class="form-section listener-form-section">
+            <form
+              id="listener-form"
+              class="form-card listener-form-card"
+              data-api="feedback"
+              data-source="listener"
+            >
+              <div class="form-group">
+                <label class="form-label" for="listener-photo">
+                  1. 今天您最喜欢的照片
+                </label>
+                <input
+                  type="file"
+                  id="listener-photo"
+                  name="listenerPhoto"
+                  accept="image/*"
+                />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="listener-fav-part">
+                  2. 今天您最喜欢的环节
+                </label>
+                <textarea
+                  id="listener-fav-part"
+                  name="listenerFavoritePart"
+                  rows="3"
+                  placeholder="欢迎您写下今天印象最深的瞬间。"
+                ></textarea>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="listener-expect-service">
+                  3. 您更多的期待什么样的服务
+                </label>
+                <textarea
+                  id="listener-expect-service"
+                  name="listenerExpectedService"
+                  rows="3"
+                  placeholder="例如：拍摄节奏、沟通方式、照片风格等。"
+                ></textarea>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="listener-advice">
+                  4. 您的意见和建议
+                </label>
+                <textarea
+                  id="listener-advice"
+                  name="listenerAdvice"
+                  rows="4"
+                  placeholder="任何建议都很珍贵，我们会认真阅读。"
+                ></textarea>
+              </div>
+
+              <div class="form-actions">
+                <button type="submit" class="btn">提交反馈</button>
+                <div class="helper-text">感谢您的分享，每一条反馈都会被认真记录。</div>
+              </div>
+              <div class="form-message helper-text" aria-live="polite"></div>
+            </form>
+          </section>
+        </div>
+      </main>
+
+      <footer class="site-footer">
+        <div class="container">
+          反馈会帮助我们变得更好，非常感谢您的耐心。
+        </div>
+      </footer>
+    </div>
+    <script src="feedback.js"></script>
+  </body>
+</html>
+

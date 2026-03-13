@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>拍摄反馈 - 宠物拍摄预约</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="page">
+      <header class="site-header">
+        <div class="container nav-inner">
+          <a class="nav-left" href="index.html">BINGO STUDIO</a>
+          <nav>
+            <ul>
+              <li><a href="booking.html">booking</a></li>
+              <li><a href="faq.html">questions</a></li>
+              <li><a href="about.html">listener</a></li>
+            </ul>
+          </nav>
+        </div>
+      </header>
+
+      <main class="main">
+        <div class="container">
+          <section class="page-heading">
+            <h1 class="page-title">拍摄 Feedback</h1>
+            <p class="page-description">
+              谢谢您带她（他）来。以下几个问题完全自愿填写，只是想多了解一些您的真实感受。
+            </p>
+          </section>
+
+          <section class="form-section">
+            <form id="feedback-form" class="form-card" data-api="feedback" data-source="feedback">
+              <div class="form-group">
+                <label class="form-label" for="fav-part">
+                  1. 您最喜欢今天的哪个环节？
+                </label>
+                <textarea
+                  id="fav-part"
+                  name="favPart"
+                  rows="3"
+                  placeholder="可以是某个瞬间、一个小动作，或一段对话。"
+                ></textarea>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">
+                  2. 您会推荐给朋友的程度 1–10 分？
+                </label>
+                <div
+                  class="rating-options"
+                  id="recommend-rating"
+                  aria-label="推荐程度 1-10 分"
+                >
+                  <!-- 简单的 1-10 评分 -->
+                  <button type="button" class="rating-option" data-value="1">
+                    1
+                  </button>
+                  <button type="button" class="rating-option" data-value="2">
+                    2
+                  </button>
+                  <button type="button" class="rating-option" data-value="3">
+                    3
+                  </button>
+                  <button type="button" class="rating-option" data-value="4">
+                    4
+                  </button>
+                  <button type="button" class="rating-option" data-value="5">
+                    5
+                  </button>
+                  <button type="button" class="rating-option" data-value="6">
+                    6
+                  </button>
+                  <button type="button" class="rating-option" data-value="7">
+                    7
+                  </button>
+                  <button type="button" class="rating-option" data-value="8">
+                    8
+                  </button>
+                  <button type="button" class="rating-option" data-value="9">
+                    9
+                  </button>
+                  <button type="button" class="rating-option" data-value="10">
+                    10
+                  </button>
+                </div>
+                <input type="hidden" name="rating" id="rating-value" />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="fav-photo">
+                  3. 您最喜欢哪一张照片，为什么？
+                </label>
+                <textarea
+                  id="fav-photo"
+                  name="favPhoto"
+                  rows="3"
+                  placeholder="可以简单描述那一张照片的样子，或当时的感觉。"
+                ></textarea>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="compare-expect">
+                  4. 拍摄结束后，您觉得实际体验和预期相比如何？
+                </label>
+                <textarea
+                  id="compare-expect"
+                  name="compareExpect"
+                  rows="3"
+                  placeholder="可以是比想象更轻松 / 比想象更安静 / 或者任何想说的话。"
+                ></textarea>
+              </div>
+
+              <div class="form-actions">
+                <button type="submit" class="btn">提交反馈</button>
+                <div class="helper-text">
+                  不需要长篇大论，哪怕是一两句，也很珍贵。
+                </div>
+              </div>
+              <div class="form-message helper-text" aria-live="polite"></div>
+            </form>
+          </section>
+        </div>
+      </main>
+
+      <footer class="site-footer">
+        <div class="container">
+          谢谢您愿意把这段经历告诉我们，也希望这些照片能陪伴您更久一点。
+        </div>
+      </footer>
+    </div>
+
+    <script src="feedback.js"></script>
+  </body>
+</html>
+

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>后台管理 - BINGO STUDIO</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="admin-page">
+    <div class="page">
+      <header class="site-header">
+        <div class="container nav-inner">
+          <a class="nav-left" href="index.html">BINGO STUDIO</a>
+          <nav>
+            <ul>
+              <li><a href="booking.html">booking</a></li>
+              <li><a href="faq.html">questions</a></li>
+              <li><a href="about.html">listener</a></li>
+            </ul>
+          </nav>
+        </div>
+      </header>
+
+      <main class="main">
+        <div class="container">
+          <section class="page-heading">
+            <h1 class="page-title">后台管理</h1>
+            <p class="page-description">
+              实时查看预约与反馈。保持此页面打开，即可自动刷新新数据。
+            </p>
+          </section>
+
+          <section class="admin-stats">
+            <article class="admin-stat-card">
+              <div class="admin-stat-label">预约总数</div>
+              <div id="bookings-count" class="admin-stat-value">0</div>
+            </article>
+            <article class="admin-stat-card">
+              <div class="admin-stat-label">反馈总数</div>
+              <div id="feedbacks-count" class="admin-stat-value">0</div>
+            </article>
+            <article class="admin-stat-card">
+              <div class="admin-stat-label">连接状态</div>
+              <div id="stream-status" class="admin-stat-value">连接中...</div>
+            </article>
+          </section>
+
+          <section class="admin-grid">
+            <article class="admin-card">
+              <h2 class="section-title">预约列表</h2>
+              <div id="bookings-list" class="admin-list"></div>
+            </article>
+            <article class="admin-card">
+              <h2 class="section-title">反馈列表</h2>
+              <div id="feedbacks-list" class="admin-list"></div>
+            </article>
+          </section>
+        </div>
+      </main>
+    </div>
+    <script src="admin.js"></script>
+  </body>
+</html>
