@@ -12,7 +12,7 @@ from werkzeug.utils import secure_filename
 
 
 BASE_DIR = Path(__file__).resolve().parent
-DATA_DIR = BASE_DIR / "data"
+DATA_DIR = Path(os.environ.get("BINGO_DATA_DIR", BASE_DIR / "data"))
 UPLOAD_DIR = DATA_DIR / "uploads"
 DB_PATH = DATA_DIR / "bingo_studio.db"
 
@@ -57,6 +57,13 @@ def init_db():
     )
     """
   )
+  booking_columns = {
+    row["name"] for row in cur.execute("PRAGMA table_info(bookings)").fetchall()
+  }
+  if "is_demo" not in booking_columns:
+    cur.execute(
+      "ALTER TABLE bookings ADD COLUMN is_demo INTEGER NOT NULL DEFAULT 0"
+    )
   cur.execute(
     """
     CREATE TABLE IF NOT EXISTS booking_babies (
@@ -98,10 +105,127 @@ def init_db():
   conn.close()
 
 
+DEMO_BOOKINGS = [
+  ("林晓雨", "demo_linxiaoyu", "lin.xiaoyu@example.com", "+44 7700 900101", "团子", "3岁", "比熊", "轻爵士", "第一次见到我时，你在想什么？"),
+  ("周子涵", "demo_zhouzihan", "zhou.zihan@example.com", "+44 7700 900102", "可乐", "2岁", "柯基", "lo-fi", "你最喜欢和我一起做什么？"),
+  ("陈思远", "demo_chensiyuan", "chen.siyuan@example.com", "+44 7700 900103", "年糕", "5岁", "英短", "独立民谣", "你每天在窗边看什么？"),
+  ("许安然", "demo_xu_anran", "xu.anran@example.com", "+44 7700 900104", "奶糖", "1岁", "布偶", "古典", "你觉得家是什么？"),
+  ("吴嘉宁", "demo_wujianing", "wu.jianing@example.com", "+44 7700 900105", "奥利奥", "4岁", "边牧", "轻音乐", "你最开心的一天是哪天？"),
+  ("沈语桐", "demo_shenyutong", "shen.yutong@example.com", "+44 7700 900106", "麻薯", "8个月", "金渐层", "R&B", "你为什么总爱跟着我？"),
+  ("赵清越", "demo_zhaoqingyue", "zhao.qingyue@example.com", "+44 7700 900107", "豆包", "6岁", "柴犬", "城市流行", "你还记得第一次回家吗？"),
+  ("苏念安", "demo_sunianan", "su.nianan@example.com", "+44 7700 900108", "桃子", "3岁", "博美", "钢琴", "你最喜欢哪个玩具？"),
+  ("顾星河", "demo_guxinghe", "gu.xinghe@example.com", "+44 7700 900109", "小七", "2岁", "暹罗", "爵士", "如果可以旅行，你想去哪里？"),
+  ("唐予希", "demo_tangyuxi", "tang.yuxi@example.com", "+44 7700 900110", "布丁", "7岁", "泰迪", "民谣", "这些年你过得开心吗？"),
+  ("程以宁", "demo_chengyining", "cheng.yining@example.com", "+44 7700 900111", "元宝", "1岁半", "法斗", "电子氛围", "你为什么喜欢晒太阳？"),
+  ("叶知秋", "demo_yezhiqiu", "ye.zhiqiu@example.com", "+44 7700 900112", "芝麻", "4岁", "田园猫", "古典", "你觉得我懂你吗？"),
+  ("陆晨曦", "demo_luchenxi", "lu.chenxi@example.com", "+44 7700 900113", "旺仔", "3岁", "拉布拉多", "流行", "你最想对我说什么？"),
+  ("姜晚晴", "demo_jiangwanqing", "jiang.wanqing@example.com", "+44 7700 900114", "雪球", "10个月", "银渐层", "纯音乐", "你做梦时会梦到什么？"),
+  ("韩若宁", "demo_hanruoning", "han.ruoning@example.com", "+44 7700 900115", "麦片", "5岁", "雪纳瑞", "轻摇滚", "下辈子还愿意来我家吗？"),
+]
+
+
+def seed_demo_bookings():
+  conn = db_connect()
+  cur = conn.cursor()
+  existing = cur.execute(
+    "SELECT COUNT(*) AS count FROM bookings WHERE is_demo = 1"
+  ).fetchone()["count"]
+  if existing >= len(DEMO_BOOKINGS):
+    conn.close()
+    return
+
+  # Keep demo records in the past so they never block real future availability.
+  base_booking_date = date.today() - timedelta(days=len(DEMO_BOOKINGS))
+  created_base = datetime.now() - timedelta(days=len(DEMO_BOOKINGS))
+  time_slots = ["13:30-15:00", "15:30-17:00", "17:00-18:30"]
+
+  for idx, demo in enumerate(DEMO_BOOKINGS):
+    owner_name, wechat_id, email, phone, baby_name, baby_age, breed, music_style, question = demo
+    booking_date = (base_booking_date + timedelta(days=idx)).isoformat()
+    if cur.execute(
+      "SELECT 1 FROM bookings WHERE booking_date = ?", (booking_date,)
+    ).fetchone():
+      continue
+
+    payload = {
+      "date": booking_date,
+      "time": time_slots[idx % len(time_slots)],
+      "ownerName": owner_name,
+      "wechatId": wechat_id,
+      "email": email,
+      "phone": phone,
+      "babyCount": 1,
+      "musicStyle": music_style,
+      "allergyStatus": "no",
+      "emotionQuestion": question,
+      "consent": 1,
+      "isDemo": True,
+    }
+    cur.execute(
+      """
+      INSERT OR IGNORE INTO bookings (
+        created_at, booking_date, time_slot, owner_name, wechat_id, email, phone,
+        baby_count, music_playlist, music_style, allergy_status, allergy_detail,
+        emotion_question, consent, raw_json, is_demo
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)
+      """,
+      (
+        (created_base + timedelta(days=idx)).isoformat(timespec="seconds"),
+        booking_date,
+        payload["time"],
+        owner_name,
+        wechat_id,
+        email,
+        phone,
+        1,
+        "",
+        music_style,
+        "no",
+        "",
+        question,
+        1,
+        json.dumps(payload, ensure_ascii=False),
+      ),
+    )
+    if cur.rowcount != 1:
+      continue
+    booking_id = cur.lastrowid
+    cur.execute(
+      """
+      INSERT INTO booking_babies (
+        booking_id, baby_index, name, age, breed, hobby, character,
+        attack_history, controllable, experience, photo_path
+      ) VALUES (?, 1, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      """,
+      (
+        booking_id,
+        baby_name,
+        baby_age,
+        breed,
+        "散步、玩球、吃零食",
+        "亲人、活泼",
+        "no",
+        "easy",
+        "first",
+        "",
+      ),
+    )
+
+  conn.commit()
+  conn.close()
+
+
 @app.before_request
 def ensure_db_schema():
   # Auto-heal schema if DB file was recreated/cleared.
   init_db()
+
+
+@app.after_request
+def disable_api_cache(response):
+  if request.path.startswith("/api/"):
+    response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate"
+  return response
 
 
 def now_iso():
@@ -392,7 +516,8 @@ def query_bookings():
     """
     SELECT
       b.id, b.created_at, b.booking_date, b.time_slot, b.owner_name, b.wechat_id, b.email, b.phone,
-      b.baby_count, b.music_playlist, b.music_style, b.allergy_status, b.allergy_detail, b.emotion_question
+      b.baby_count, b.music_playlist, b.music_style, b.allergy_status, b.allergy_detail,
+      b.emotion_question, b.is_demo
     FROM bookings b
     ORDER BY b.created_at DESC
     """
@@ -476,6 +601,7 @@ def root():
 
 
 init_db()
+seed_demo_bookings()
 
 
 if __name__ == "__main__":

@@ -154,10 +154,11 @@ function validateAndHighlightForm(form, options = {}) {
   }
 
   if (!isValid && firstInvalidField) {
-    firstInvalidField.focus();
+    firstInvalidField.scrollIntoView({ behavior: "smooth", block: "center" });
+    firstInvalidField.focus({ preventScroll: true });
   }
 
-  return isValid;
+  return { isValid, firstInvalidField };
 }
 
 function highlightMissingRequiredFields(form) {
@@ -470,17 +471,29 @@ function setupForm(syncDateState) {
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
-    if (message) message.textContent = "";
+    if (message) {
+      message.textContent = "";
+      message.classList.remove("form-message-error", "form-message-success");
+    }
 
     if (!consentCheckbox.checked) {
       consentError.textContent = "提交前请先勾选“我已阅读并同意拍摄须知”。";
+      if (message) {
+        message.textContent = "请先勾选拍摄须知，再提交预约。";
+        message.classList.add("form-message-error");
+      }
       consentCheckbox.focus();
       return;
     } else {
       consentError.textContent = "";
     }
 
-    if (!validateAndHighlightForm(form, { consentCheckbox })) {
+    const validation = validateAndHighlightForm(form, { consentCheckbox });
+    if (!validation.isValid) {
+      if (message) {
+        message.textContent = "预约尚未提交：请补全页面中标红的必填信息。";
+        message.classList.add("form-message-error");
+      }
       return;
     }
 
@@ -494,6 +507,11 @@ function setupForm(syncDateState) {
       if (unavailableMessage) {
         unavailableMessage.textContent = UNAVAILABLE_MESSAGE;
       }
+      if (message) {
+        message.textContent = "预约尚未提交：所选日期已不可预约，请重新选择。";
+        message.classList.add("form-message-error");
+      }
+      dateInput?.scrollIntoView({ behavior: "smooth", block: "center" });
       return;
     }
 
@@ -503,17 +521,30 @@ function setupForm(syncDateState) {
       if (timeSlots) {
         timeSlots.classList.add(ERROR_BOX_CLASS);
       }
+      message?.classList.add("form-message-error");
       return;
     }
 
-    if (submitButton) submitButton.disabled = true;
+    const originalButtonText = submitButton?.textContent || "提交预约";
+    if (submitButton) {
+      submitButton.disabled = true;
+      submitButton.textContent = "提交中…";
+    }
+    form.setAttribute("aria-busy", "true");
+    if (message) {
+      message.textContent = "正在提交预约，请稍候…";
+    }
 
     try {
       const formData = new FormData(form);
+      const controller = new AbortController();
+      const timeoutId = window.setTimeout(() => controller.abort(), 30000);
       const response = await fetch("/api/bookings", {
         method: "POST",
         body: formData,
+        signal: controller.signal,
       });
+      window.clearTimeout(timeoutId);
 
       const data = await response.json().catch(() => ({}));
       if (!response.ok || !data.ok) {
@@ -525,6 +556,7 @@ function setupForm(syncDateState) {
         }
         if (message) {
           message.textContent = data.message || "提交失败，请稍后重试。";
+          message.classList.add("form-message-error");
         }
         if (response.status === 409 && unavailableMessage) {
           unavailableMessage.textContent = UNAVAILABLE_MESSAGE;
@@ -543,16 +575,25 @@ function setupForm(syncDateState) {
       if (message) {
         message.textContent =
           "感谢您的填写，我们已收到预约信息。稍后将通过您留下的联系方式与您确认。";
+        message.classList.add("form-message-success");
       }
 
       form.reset();
       document.getElementById("time").value = "";
     } catch (error) {
       if (message) {
-        message.textContent = "网络连接异常，请稍后再试。";
+        message.textContent =
+          error?.name === "AbortError"
+            ? "提交超时，请检查网络后重新提交。"
+            : "网络连接异常，请稍后再试。";
+        message.classList.add("form-message-error");
       }
     } finally {
-      if (submitButton) submitButton.disabled = false;
+      form.removeAttribute("aria-busy");
+      if (submitButton) {
+        submitButton.disabled = false;
+        submitButton.textContent = originalButtonText;
+      }
     }
   });
 

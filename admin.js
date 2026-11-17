@@ -25,7 +25,7 @@ function renderBookings(bookings) {
         <article class="admin-item">
           <div class="admin-item-title">${textOrDash(item.owner_name)} · ${textOrDash(
             item.booking_date
-          )} ${textOrDash(item.time_slot)}</div>
+          )} ${textOrDash(item.time_slot)}${item.is_demo ? " · 模拟记录" : ""}</div>
           <div class="admin-item-meta">联系方式：${textOrDash(item.phone)} / ${textOrDash(
         item.wechat_id
       )}</div>
@@ -72,7 +72,9 @@ function renderFeedbacks(feedbacks) {
 }
 
 async function loadData() {
-  const response = await fetch("/api/admin/data");
+  const response = await fetch(`/api/admin/data?_=${Date.now()}`, {
+    cache: "no-store",
+  });
   if (!response.ok) {
     throw new Error("加载失败");
   }
@@ -85,6 +87,8 @@ async function loadData() {
   );
   renderBookings(data.bookings || []);
   renderFeedbacks(data.feedbacks || []);
+  const streamStatus = document.getElementById("stream-status");
+  if (streamStatus) streamStatus.textContent = "数据已更新";
 }
 
 function setupRealtime() {
@@ -107,6 +111,8 @@ function setupRealtime() {
   source.onerror = () => {
     if (streamStatus) streamStatus.textContent = "连接中断，重连中...";
   };
+
+  return source;
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -117,4 +123,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (streamStatus) streamStatus.textContent = "初始加载失败";
   }
   setupRealtime();
+  window.setInterval(async () => {
+    try {
+      await loadData();
+    } catch (error) {
+      if (streamStatus) streamStatus.textContent = "自动刷新失败";
+    }
+  }, 15000);
 });
